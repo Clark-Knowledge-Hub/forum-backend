@@ -1,12 +1,14 @@
 package br.com.alura.forum.service
 
 import br.com.alura.forum.dto.request.TopicoRequest
+import br.com.alura.forum.dto.response.TopicoResponse
 import br.com.alura.forum.model.Curso
 import br.com.alura.forum.model.Topico
 import br.com.alura.forum.model.Usuario
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.RequestBody
 import java.util.ArrayList
+import java.util.stream.Collectors
 
 @Service
 class TopicoService(
@@ -15,8 +17,15 @@ class TopicoService(
     private val usuarioService: UsuarioService
 ) {
 
-    fun listar(): List<Topico> {
-        return topicos
+    fun listar(): List<TopicoResponse> {
+        return topicos.stream().map {
+            t -> TopicoResponse(
+                id = t.id,
+                titulo = t.titulo,
+                mensagem = t.mensagem,
+                status = t.status,
+                dataCriacao = t.dataCriacao,
+        )}.collect(Collectors.toList())
     }
 
     fun buscarPorId(id: Long): Topico {

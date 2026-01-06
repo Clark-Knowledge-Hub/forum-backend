@@ -1,5 +1,6 @@
 package br.com.alura.forum.service
 
+import br.com.alura.forum.model.Categoria
 import br.com.alura.forum.model.Curso
 import org.springframework.stereotype.Service
 import java.util.Arrays
@@ -10,17 +11,17 @@ class CursoService(var cursos: List<Curso>) {
         val curso1 = Curso(
             id = 1,
             nome = "Kotlin",
-            categoria = null
+            categoria = Categoria.PROGRAMACAO
         )
         val curso2 = Curso(
             id = 2,
             nome = "Java",
-            categoria = null
+            categoria = Categoria.PROGRAMACAO
         )
         val curso3 = Curso(
             id = 3,
             nome = "Spring Boot",
-            categoria = null
+            categoria = Categoria.PROGRAMACAO
         )
         cursos = Arrays.asList(curso1, curso2, curso3)
     }

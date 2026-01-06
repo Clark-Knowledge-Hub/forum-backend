@@ -1,6 +1,7 @@
 package br.com.alura.forum.controller
 
 import br.com.alura.forum.dto.request.TopicoRequest
+import br.com.alura.forum.dto.response.TopicoResponse
 import br.com.alura.forum.model.Categoria
 import br.com.alura.forum.model.Curso
 import br.com.alura.forum.model.Topico
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 class TopicoController(private val service: TopicoService) {
 
     @GetMapping
-    fun listar(): List<Topico> {
+    fun listar(): List<TopicoResponse> {
         return service.listar()
     }
 
