@@ -1,18 +1,26 @@
 package br.com.alura.forum.controller
 
 import br.com.alura.forum.dto.request.TopicoRequest
+import br.com.alura.forum.dto.request.TopicoUpdateRequest
 import br.com.alura.forum.dto.response.TopicoResponse
 import br.com.alura.forum.model.Categoria
 import br.com.alura.forum.model.Curso
 import br.com.alura.forum.model.Topico
 import br.com.alura.forum.model.Usuario
 import br.com.alura.forum.service.TopicoService
+import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.util.UriComponentsBuilder
 
 @RestController
 @RequestMapping("/topicos")
@@ -29,7 +37,25 @@ class TopicoController(private val service: TopicoService) {
     }
 
     @PostMapping
-    fun cadastrar(@RequestBody topico: TopicoRequest) {
-        return service.cadastrar(topico)
+    fun cadastrar(
+
+        @RequestBody @Valid topico: TopicoRequest,
+        uriComponentsBuilder: UriComponentsBuilder
+    ): ResponseEntity<TopicoResponse> {
+        val topicoResponse = service.cadastrar(topico)
+        val uri = uriComponentsBuilder.path("/topicos/${topicoResponse.id}").build().toUri()
+        return ResponseEntity.created(uri).body(topicoResponse)
+    }
+
+    @PutMapping
+    fun atualizar(@RequestBody @Valid topico: TopicoUpdateRequest): ResponseEntity<TopicoResponse> {
+        val topico = service.atualizar(topico)
+        return ResponseEntity.ok(topico)
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deletar(@PathVariable id: Long) {
+        service.deletar(id)
     }
 }

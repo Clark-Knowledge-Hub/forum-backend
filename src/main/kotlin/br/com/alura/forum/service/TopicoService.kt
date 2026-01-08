@@ -1,47 +1,64 @@
 package br.com.alura.forum.service
 
 import br.com.alura.forum.dto.request.TopicoRequest
+import br.com.alura.forum.dto.request.TopicoUpdateRequest
 import br.com.alura.forum.dto.response.TopicoResponse
-import br.com.alura.forum.model.Curso
+import br.com.alura.forum.exception.NotFoundException
+import br.com.alura.forum.mapper.TopicoMapper
 import br.com.alura.forum.model.Topico
-import br.com.alura.forum.model.Usuario
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.RequestBody
 import java.util.ArrayList
 import java.util.stream.Collectors
+import br.com.alura.forum.mapper.TopicoRequestMapper
 
 @Service
 class TopicoService(
     private var topicos: List<Topico> = ArrayList(),
-    private val cursoService: CursoService,
-    private val usuarioService: UsuarioService
+    private val topicoMapper: TopicoMapper,
+    private val topicoRequestMapper: TopicoRequestMapper,
+    private val notFoundMessage: String = "Tópico não encontrado"
 ) {
 
     fun listar(): List<TopicoResponse> {
         return topicos.stream().map {
-            t -> TopicoResponse(
-                id = t.id,
-                titulo = t.titulo,
-                mensagem = t.mensagem,
-                status = t.status,
-                dataCriacao = t.dataCriacao,
-        )}.collect(Collectors.toList())
+            t -> topicoMapper.map(t)
+        }.collect(Collectors.toList())
     }
 
     fun buscarPorId(id: Long): Topico {
         return topicos.stream().filter({
             t -> t.id == id
-        }).findFirst().get()
+        }).findFirst().orElseThrow { NotFoundException(notFoundMessage) }
     }
 
-    fun cadastrar(dto: TopicoRequest) {
-        topicos = topicos.plus(Topico(
-            id = (topicos.size + 1).toLong(),
+    fun cadastrar(dto: TopicoRequest): TopicoResponse {
+        val topico = topicoRequestMapper.map(dto)
+        val nextId = (topicos.maxOfOrNull { it.id ?: 0L } ?: 0L) + 1L
+        topico.id = nextId
+        topicos = topicos + topico
+        return topicoMapper.map(topico)
+    }
+
+    fun atualizar(dto: TopicoUpdateRequest): TopicoResponse {
+        val existente = topicos.find { it.id == dto.id } ?: throw NotFoundException(notFoundMessage)
+        val atualizado = Topico(
+            id = dto.id,
             titulo = dto.titulo,
             mensagem = dto.mensagem,
-            curso = cursoService.buscarPorId(dto.idCurso),
-            autor = usuarioService.buscarPorId(dto.idAutor)
+            curso = existente.curso,
+            autor = existente.autor,
+            respostas = existente.respostas,
+            status = existente.status,
+            dataCriacao = existente.dataCriacao
         )
-        )
+        topicos = topicos.map { if (it.id == dto.id) atualizado else it }
+        return topicoMapper.map(atualizado)
+    }
+
+    fun deletar(id: Long){
+        val topico = topicos.stream().filter({
+                t -> t.id == id
+        }).findFirst().orElseThrow { NotFoundException(notFoundMessage) }
+        topicos.minus(topico)
     }
 }

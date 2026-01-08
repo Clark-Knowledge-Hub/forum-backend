@@ -4,15 +4,13 @@ import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 
-data class TopicoRequest (
-    @field:NotEmpty("O título não pode ser vazio")
+data class TopicoUpdateRequest(
+    @field:NotNull("O id do tópico não pode ser nulo")
+    val id: Long,
+    @field:NotEmpty(message = "O título não pode ser vazio")
     @field:Size(min = 5, max = 100, message = "O título deve ter entre {min} e {max} caracteres")
     val titulo: String,
-    @field:NotEmpty("A mensagem não pode ser vazia")
+    @field:NotEmpty(message = "A mensagem não pode ser vazia")
     @field:Size(min = 5, max = 100, message = "A mensagem deve ter entre {min} e {max} caracteres")
-    val mensagem: String,
-    @field:NotNull("O id do curso não pode ser nulo")
-    val idCurso: Long,
-    @field:NotNull("O id do autor não pode ser nulo")
-    val idAutor: Long
+    val mensagem: String
 )
