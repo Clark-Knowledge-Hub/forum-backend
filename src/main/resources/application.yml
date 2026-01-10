@@ -1,8 +1,26 @@
 spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
   datasource:
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:forum
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:forum;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
     username: sa
     password:
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  logging:
+    level:
+      org.flywaydb: DEBUG
+      org.hibernate: DEBUG
+      org.springframework.jdbc: DEBUG
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true

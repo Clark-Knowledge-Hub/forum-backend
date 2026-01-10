@@ -76,6 +76,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
 	</dependencies>
 
 	<build>
@@ -89,14 +93,37 @@
 			<plugin>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-maven-plugin</artifactId>
-				<configuration>
-					<args>
-						<arg>-Xjsr305=strict</arg>
-					</args>
-					<compilerPlugins>
-						<plugin>spring</plugin>
-					</compilerPlugins>
-				</configuration>
+                <version>${kotlin.version}</version>
+                <executions>
+                <execution>
+                    <id>compile</id>
+                    <goals>
+                        <goal>compile</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>test-compile</id>
+                    <goals>
+                        <goal>test-compile</goal>
+                    </goals>
+                </execution>
+                </executions>
+
+                <configuration>
+                    <jvmTarget>21</jvmTarget>
+                    <compilerPlugins>
+                        <plugin>all-open</plugin>
+                        <plugin>no-arg</plugin>
+                    </compilerPlugins>
+                    <pluginOptions>
+                        <pluginOption>all-open:annotation=jakarta.persistence.Entity</pluginOption>
+                        <pluginOption>all-open:annotation=jakarta.persistence.MappedSuperclass</pluginOption>
+                        <pluginOption>all-open:annotation=jakarta.persistence.Embeddable</pluginOption>
+                        <pluginOption>no-arg:annotation=jakarta.persistence.Entity</pluginOption>
+                        <pluginOption>no-arg:annotation=jakarta.persistence.MappedSuperclass</pluginOption>
+                        <pluginOption>no-arg:annotation=jakarta.persistence.Embeddable</pluginOption>
+                    </pluginOptions>
+                </configuration>
 				<dependencies>
 					<dependency>
 						<groupId>org.jetbrains.kotlin</groupId>

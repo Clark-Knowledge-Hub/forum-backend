@@ -23,6 +23,6 @@ class Topico (
     val autor: Usuario,
     @Enumerated(value = EnumType.STRING)
     var status: StatusTopico = StatusTopico.NAO_RESPONDIDO,
-    @OneToMany
+    @OneToMany(targetEntity = Resposta::class, mappedBy = "topico")
     var respostas: List<Resposta> = ArrayList()
 )

@@ -1,7 +1,9 @@
 package br.com.alura.forum.service
 
+import br.com.alura.forum.exception.NotFoundException
 import br.com.alura.forum.model.Usuario
 import br.com.alura.forum.repository.UsuarioRepository
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 
 @Service
@@ -9,6 +11,7 @@ class UsuarioService(private val repository: UsuarioRepository) {
 
 
     fun buscarPorId(id: Long): Usuario {
-        return repository.getOne(id);
+        return repository.findById(id).orElseThrow { NotFoundException(message="Usuario nao encontrado: $id")
+        }
     }
 }

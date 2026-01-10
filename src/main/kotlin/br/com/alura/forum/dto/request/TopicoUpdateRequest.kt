@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 
 data class TopicoUpdateRequest(
-    @field:NotNull("O id do tópico não pode ser nulo")
+    @field:NotNull(message = "O id do tópico não pode ser nulo")
     val id: Long,
     @field:NotEmpty(message = "O título não pode ser vazio")
     @field:Size(min = 5, max = 100, message = "O título deve ter entre {min} e {max} caracteres")
