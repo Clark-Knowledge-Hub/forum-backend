@@ -8,7 +8,10 @@ import br.com.alura.forum.model.Curso
 import br.com.alura.forum.model.Topico
 import br.com.alura.forum.model.Usuario
 import br.com.alura.forum.service.TopicoService
+import jakarta.transaction.Transactional
 import jakarta.validation.Valid
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -29,10 +32,11 @@ import org.springframework.web.util.UriComponentsBuilder
 
 @RestController
 @RequestMapping("/topicos")
-class TopicoController(private val service: TopicoService) {
+open class TopicoController(private val service: TopicoService) {
 
     @GetMapping
-    fun listar(
+    @Cacheable("topicos")
+    open fun listar(
         @RequestParam(required = false) nomeCurso: String?,
         @PageableDefault(size=5, sort=["data_criacao"], direction= Sort.Direction.DESC) paginacao: Pageable
     ): Page<TopicoResponse> {
@@ -45,8 +49,9 @@ class TopicoController(private val service: TopicoService) {
     }
 
     @PostMapping
-    fun cadastrar(
-
+    @Transactional
+    @CacheEvict(value = ["topicos"], allEntries = true)
+    open fun cadastrar(
         @RequestBody @Valid topico: TopicoRequest,
         uriComponentsBuilder: UriComponentsBuilder
     ): ResponseEntity<TopicoResponse> {
@@ -56,14 +61,18 @@ class TopicoController(private val service: TopicoService) {
     }
 
     @PutMapping
-    fun atualizar(@RequestBody @Valid topico: TopicoUpdateRequest): ResponseEntity<TopicoResponse> {
+    @Transactional
+    @CacheEvict(value = ["topicos"], allEntries = true)
+    open fun atualizar(@RequestBody @Valid topico: TopicoUpdateRequest): ResponseEntity<TopicoResponse> {
         val topico = service.atualizar(topico)
         return ResponseEntity.ok(topico)
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
+    @CacheEvict(value = ["topicos"], allEntries = true)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deletar(@PathVariable id: Long) {
+    open fun deletar(@PathVariable id: Long) {
         service.deletar(id)
     }
 }
